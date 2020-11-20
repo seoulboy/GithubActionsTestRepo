@@ -25,10 +25,14 @@ jobs:
 
   build:
     name: Build
+    
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
+      OS_VERSION: "14.2"
+
     runs-on: macOS-latest
+    
     steps:
     - name: Checkout project
       uses: actions/checkout@v1

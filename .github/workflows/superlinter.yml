@@ -23,38 +23,51 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
   build:
-    name: Build
+
+    runs-on: macOS-latest
+
+    name: Build iPhone 12
+
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
-      DERIVED_DATA_PATH: "DerivedData"
-    runs-on: macOS-latest
+      OS_VERSION: "14.2"
+
     steps:
+
     - name: Checkout project
       uses: actions/checkout@v1
+
+    - name: CocoaPod Install
+      run: pod install
+
     - name: Force Xcode 12
-      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
-    - name: Build Application
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.ap
+
+    - name: Clean Build, Build
       run: |
-        set -o pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH build-for-testing | xcpretty --color --simple
+        set -o pipefail && xcodebuild -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION" build-for-testing
         
   unit_test:
-    name: Unit test
+    
+    runs-on: macOS-latest
+
+    name: testing iPhone 12
+    
     env:
       DEVICE: "iPhone 12"
-      DERIVED_DATA_PATH: "DerivedData"
+      OS_VERSION: "14.2"
       UNIT_TEST_TARGET: "GIthubActionTestProjectTests"
-    runs-on: macOS-latest
+          
     needs: build
+
     steps:
+
     - name: Checkout project
       uses: actions/checkout@v1
+
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -xctestrun $(find . -type f -name "*.xctestrun") -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH -enableCodeCoverage YES -only-testing:$UNIT_TEST_TARGET | xcpretty --color --simple
-    - name: Upload test logs
-      uses: actions/upload-artifact@v1
-      with:
-        name: TestLogs
-        path: DerivedData/Logs/Test
+        set -o pipefail && xcodebuild test-without-building -scheme $UNIT_TEST_TARGET -project GIthubActionTestProject.xcodeproj -destination 'platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION'

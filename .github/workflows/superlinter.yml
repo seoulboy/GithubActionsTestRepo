@@ -50,6 +50,8 @@ jobs:
     steps:
     - name: Checkout project
       uses: actions/checkout@v1
+    - name: Force Xcode 12
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     - name: Run unit tests
       run: |
         set -o pipefail && xcodebuild test-without-building -xctestrun $(find . -type f -name "*.xctestrun") -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH -enableCodeCoverage YES -only-testing:$UNIT_TEST_TARGET | xcpretty --color --simple

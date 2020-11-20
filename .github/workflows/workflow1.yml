@@ -26,8 +26,6 @@ jobs:
 
   build:
 
-    runs-on: macOS-latest
-
     name: Build iPhone 12
 
     env:
@@ -35,12 +33,14 @@ jobs:
       DEVICE: "iPhone 12"
       OS_VERSION: "14.2"
 
+    runs-on: macOS-latest
+
     steps:
 
     - name: Checkout project
       uses: actions/checkout@v1
 
-    # 빌드시 코코아팟이 필요할 경우 아래 주석처리를 해제한다
+    # 빌드시 코코아팟이 필요할 경우 아래 주석처리 해제
 #     - name: CocoaPod Install
 #       run: pod install
 

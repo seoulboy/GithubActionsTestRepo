@@ -1,4 +1,4 @@
-name: Super-Linter
+name: workflow1
 
 on: pull_request
 
@@ -25,11 +25,13 @@ jobs:
 
   build:
     name: Build
+    
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
-      DERIVED_DATA_PATH: "DerivedData"
+
     runs-on: macOS-latest
+    
     steps:
     - name: Checkout project
       uses: actions/checkout@v1
@@ -37,24 +39,28 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     - name: Build Application
       run: |
-        set -o pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH build-for-testing | xcpretty --color --simple
-        
+        set -o pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" build-for-testing
+            
   unit_test:
-    name: Unit test
+
+    name: testing iPhone 12
+    
     env:
+      SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
-      DERIVED_DATA_PATH: "DerivedData"
-      UNIT_TEST_TARGET: "GIthubActionTestProjectTests"
+
     runs-on: macOS-latest
+
     needs: build
+
     steps:
+
     - name: Checkout project
       uses: actions/checkout@v1
+
+    - name: Force Xcode 12
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
+
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -xctestrun $(find . -type f -name "*.xctestrun") -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH -enableCodeCoverage YES -only-testing:$UNIT_TEST_TARGET | xcpretty --color --simple
-    - name: Upload test logs
-      uses: actions/upload-artifact@v1
-      with:
-        name: TestLogs
-        path: DerivedData/Logs/Test
+        set -o pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE"

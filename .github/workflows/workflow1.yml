@@ -40,15 +40,18 @@ jobs:
     - name: Checkout project
       uses: actions/checkout@v1
 
-    - name: CocoaPod Install
-      run: pod install
+    # 빌드시 코코아팟이 필요할 경우 아래 주석처리를 해제한다
+#     - name: CocoaPod Install
+#       run: pod install
 
+    # Xcode 12를 사용하여 빌드하도록 바꾼다
     - name: Force Xcode 12
       run: sudo xcode-select -switch /Applications/Xcode_12.2.ap
 
-    - name: Clean Build, Build
+    # 빌드한다
+    - name: Build
       run: |
-        set -o pipefail && xcodebuild -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION" build-for-testing
+        set -eo pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION" build-for-testing
         
   unit_test:
     
@@ -57,10 +60,10 @@ jobs:
     name: testing iPhone 12
     
     env:
+      SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
       OS_VERSION: "14.2"
-      UNIT_TEST_TARGET: "GIthubActionTestProjectTests"
-          
+
     needs: build
 
     steps:
@@ -70,4 +73,4 @@ jobs:
 
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -scheme $UNIT_TEST_TARGET -project GIthubActionTestProject.xcodeproj -destination 'platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION'
+        set -o pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION"

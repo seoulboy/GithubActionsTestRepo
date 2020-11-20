@@ -43,6 +43,7 @@ jobs:
     name: Unit test
     env:
       DEVICE: "iPhone 12"
+      SCHEME: "GIthubActionTestProject"
       DERIVED_DATA_PATH: "DerivedData"
       UNIT_TEST_TARGET: "GIthubActionTestProjectTests"
     runs-on: macOS-latest
@@ -50,9 +51,11 @@ jobs:
     steps:
     - name: Checkout project
       uses: actions/checkout@v1
+    - name: Force Xcode 12
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -xctestrun $(find . -type f -name "*.xctestrun") -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH -enableCodeCoverage YES -only-testing:$UNIT_TEST_TARGET | xcpretty --color --simple
+        set -o pipefail && xcodebuild clean test -project GIthubActionTestProject.xcodeproj -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
     - name: Upload test logs
       uses: actions/upload-artifact@v1
       with:

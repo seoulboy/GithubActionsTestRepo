@@ -29,7 +29,6 @@ jobs:
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
-      OS_VERSION: "14.2"
 
     runs-on: macOS-latest
     
@@ -49,7 +48,6 @@ jobs:
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
-      OS_VERSION: "14.2"
 
     runs-on: macOS-latest
 
@@ -62,4 +60,4 @@ jobs:
 
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE,OS=$OS_VERSION"
+        set -o pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE"

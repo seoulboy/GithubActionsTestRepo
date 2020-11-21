@@ -2,6 +2,7 @@ name: workflow1
 
 on: pull_request
 
+
 jobs:
   # Set the job key. The key is displayed as the job name
   # when a job name is not provided
@@ -28,7 +29,7 @@ jobs:
     
     env:
       SCHEME: "GIthubActionTestProject"
-      DEVICE: "iPhone 12"
+      DEVICE: "iPhone 11"
 
     runs-on: macOS-latest
     
@@ -39,15 +40,15 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     - name: Build Application
       run: |
-        set -o pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" build-for-testing
+        set -eo pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" build-for-testing
             
   unit_test:
 
-    name: testing iPhone 12
+    name: testing iPhone 11
     
     env:
       SCHEME: "GIthubActionTestProject"
-      DEVICE: "iPhone 12"
+      DEVICE: "iPhone 11"
 
     runs-on: macOS-latest
 
@@ -63,4 +64,4 @@ jobs:
 
     - name: Run unit tests
       run: |
-        set -o pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE"
+        set -eo pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE"

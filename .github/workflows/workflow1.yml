@@ -75,6 +75,9 @@ jobs:
     
     - name: Checkout project
       uses: actions/checkout@v1
+
+    - name: Select Xcode 12
+      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     
     - name: Download products
       uses: actions/download-artifact@v2

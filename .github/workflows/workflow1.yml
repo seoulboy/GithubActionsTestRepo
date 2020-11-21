@@ -30,7 +30,7 @@ jobs:
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 11"
-
+      PROJECT: "GIthubActionTestProject.xcodeproj"
     runs-on: macOS-latest
     
     steps:
@@ -40,7 +40,10 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     - name: Build Application
       run: |
-        set -eo pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" build-for-testing
+        set -eo pipefail && xcodebuild build-for-testing |
+                             -project $PROJECT |
+                             -scheme $SCHEME |
+                             -destination "platform=iOS Simulator,name=$DEVICE"
             
   unit_test:
 
@@ -49,6 +52,7 @@ jobs:
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 11"
+      PROJECT: "GIthubActionTestProject.xcodeproj"
 
     runs-on: macOS-latest
 
@@ -64,4 +68,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        set -eo pipefail && xcodebuild test-without-building -scheme $SCHEME -project GIthubActionTestProject.xcodeproj -destination "platform=iOS Simulator,name=$DEVICE"
+        set -eo pipefail && xcodebuild test-without-building 
+                              -project $PROJECT
+                              -scheme $SCHEME
+                              -destination "platform=iOS Simulator,name=$DEVICE"

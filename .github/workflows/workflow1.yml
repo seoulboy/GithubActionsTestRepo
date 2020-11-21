@@ -25,13 +25,12 @@ jobs:
 #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
-    name: Build
+    name: Build and Test
     
     env:
       SCHEME: "GIthubActionTestProject"
       DEVICE: "iPhone 12"
       PROJECT: "GIthubActionTestProject.xcodeproj"
-      DERVIED_DATA_PATH: "DerivedData"
     runs-on: macOS-latest
     
     steps:
@@ -39,49 +38,15 @@ jobs:
     - name: Checkout project
       uses: actions/checkout@v1
     
-    - name: Force Xcode 12
+    - name: Select Xcode 12
       run: sudo xcode-select -switch /Applications/Xcode_12.2.app
     
-    - name: Build application
+    - name: Build and Test
       run: |
-        set -o pipefail && xcodebuild clean -scheme $SCHEME -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH build-for-testing | xcpretty --color --simple
-    
-    - name: Upload products
-      uses: actions/upload-artifact@v1
-      with:
-        name: Products
-        path: DerivedData/Build/Products
-            
-  unit_test:
+        set -eo pipefail && xcodebuild clean \
+                             -project $PROJECT \
+                             -scheme $SCHEME \
+                             -destination "platform=iOS Simulator,name=$DEVICE" \
+                             test | 
+                             xcpretty --color --simple
 
-    name: testing iPhone 12
-    
-    env:
-      SCHEME: "GIthubActionTestProject"
-      DEVICE: "iPhone 12"
-      PROJECT: "GIthubActionTestProject.xcodeproj"
-      DERIVED_DATA_PATH: "DerivedData"
-    runs-on: macOS-latest
-
-    steps:
-
-    - name: Checkout project
-      uses: actions/checkout@v1
-
-    - name: Download products
-      uses: actions/download-artifact@v1
-      with:
-        name: Products
-
-    - name: Force Xcode 12
-      run: sudo xcode-select -switch /Applications/Xcode_12.2.app
-
-    - name: Run unit tests
-      run: |
-        set -o pipefail && xcodebuild test-without-building -xctestrun $(find . -type f -name "*.xctestrun") -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath $DERIVED_DATA_PATH -enableCodeCoverage YES | xcpretty --color --simple
-   
-    - name: Upload test logs
-      uses: actions/upload-artifact@v1
-      with:
-        name: TestLogs
-        path: DerivedData/Logs/Test
